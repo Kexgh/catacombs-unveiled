@@ -1,16 +1,3 @@
 {
-  "events": [
-    {
-      "title": "Test Event",
-      "venue": "Dylans Gaff",
-      "ticketUrl": "https://www.eventbrite.ie/e/catacombs-bonus-show-tickets-1625302456399",
-      "date": "2000-01-19T21:00:00.000+00:00"
-    },
-    {
-      "title": "Rorys Mad Sesh",
-      "venue": "Rorys Gaff",
-      "ticketUrl": "ask at the door ",
-      "date": "1906-09-20T21:00:00.000+00:00"
-    }
-  ]
+  "events": []
 }
