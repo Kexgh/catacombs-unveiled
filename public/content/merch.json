@@ -1,1 +1,10 @@
-{ "items": [] }
+{
+  "items": [
+    {
+      "name": "Omens Jocks",
+      "price": "3 months of discord nitro ",
+      "image": "/uploads/jocks.jpg",
+      "buyUrl": "https://www.shutterstock.com/image-photo/mens-boxer-briefs-isolated-on-white-2114765720?dd_referrer=https%3A%2F%2Fwww.google.com%2F"
+    }
+  ]
+}
