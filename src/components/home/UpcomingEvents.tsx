@@ -7,6 +7,7 @@ type EventItem = {
   venue: string;
   ticketUrl?: string;
   poster?: string;
+  age?: "All Ages" | "18+";
   hidden?: boolean;
 };
 
@@ -35,7 +36,7 @@ const UpcomingEvents = () => {
       .slice(0, 3);
   }, [events]);
 
-  // If no upcoming events, show nothing (keeps homepage clean)
+  // If no upcoming events, show nothing
   if (upcoming.length === 0) return null;
 
   return (
@@ -64,9 +65,18 @@ const UpcomingEvents = () => {
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                   <div className="flex-1">
-                    <h3 className="font-display text-xl md:text-2xl tracking-wide uppercase mb-3">
-                      {event.title}
-                    </h3>
+                    {/* Title + Age badge */}
+                    <div className="flex items-center justify-between gap-4 mb-3">
+                      <h3 className="font-display text-xl md:text-2xl tracking-wide uppercase">
+                        {event.title}
+                      </h3>
+
+                      {event.age ? (
+                        <span className="inline-flex items-center px-3 py-1 text-xs tracking-widest uppercase border border-border bg-secondary text-foreground/80">
+                          {event.age}
+                        </span>
+                      ) : null}
+                    </div>
 
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
@@ -74,12 +84,12 @@ const UpcomingEvents = () => {
                         <span>{dateStr}</span>
                       </div>
 
-                      {timeStr && (
+                      {timeStr ? (
                         <div className="flex items-center gap-2">
                           <Clock size={14} />
                           <span>{timeStr}</span>
                         </div>
-                      )}
+                      ) : null}
 
                       <div className="flex items-center gap-2">
                         <MapPin size={14} />

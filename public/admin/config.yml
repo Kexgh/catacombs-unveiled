@@ -58,6 +58,17 @@ collections:
               - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
               - { label: "Poster", name: "poster", widget: "image", required: false }
 
+              # ✅ NEW: Age restriction dropdown
+              - label: "Age Restriction"
+                name: "age"
+                widget: "select"
+                options: ["All Ages", "18+"]
+                default: "18+"
+                required: true
+
+              # ✅ Optional: hide without deleting
+              - { label: "Hidden", name: "hidden", widget: "boolean", default: false, required: false }
+
               - label: "Sections (add/reorder blocks)"
                 name: "sections"
                 widget: "list"
