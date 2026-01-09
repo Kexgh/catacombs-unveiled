@@ -1,1 +1,10 @@
-{ "photos": [] }
+{
+  "photos": [
+    {
+      "image": "/uploads/jocks.jpg"
+    },
+    {
+      "image": "/uploads/john-pork.jpg"
+    }
+  ]
+}
