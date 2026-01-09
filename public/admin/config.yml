@@ -1,0 +1,114 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Where uploaded images go in your repo
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "site"
+    label: "Site Content"
+    files:
+      - name: "home"
+        label: "Home"
+        file: "public/content/home.json"
+        format: "json"
+        fields:
+          - { label: "Hero Title", name: "heroTitle", widget: "string" }
+          - { label: "Hero Subtitle", name: "heroSubtitle", widget: "string", required: false }
+          - label: "Homepage Sections (add/reorder)"
+            name: "sections"
+            widget: "list"
+            types:
+              - label: "Text Section"
+                name: "text"
+                widget: "object"
+                fields:
+                  - { label: "Heading", name: "heading", widget: "string" }
+                  - { label: "Text", name: "text", widget: "markdown" }
+              - label: "CTA Section"
+                name: "cta"
+                widget: "object"
+                fields:
+                  - { label: "Heading", name: "heading", widget: "string" }
+                  - { label: "Button Text", name: "buttonText", widget: "string" }
+                  - { label: "Button Link", name: "buttonLink", widget: "string" }
+
+      - name: "about"
+        label: "About"
+        file: "public/content/about.json"
+        format: "json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown" }
+
+      - name: "events"
+        label: "Events"
+        file: "public/content/events.json"
+        format: "json"
+        fields:
+          - label: "Upcoming Events"
+            name: "events"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Date", name: "date", widget: "datetime" }
+              - { label: "Venue", name: "venue", widget: "string" }
+              - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
+              - { label: "Poster", name: "poster", widget: "image", required: false }
+
+              - label: "Sections (add/reorder blocks)"
+                name: "sections"
+                widget: "list"
+                types:
+                  - label: "Lineup"
+                    name: "lineup"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
+                      - label: "Artists"
+                        name: "artists"
+                        widget: "list"
+                        field: { label: "Artist", name: "artist", widget: "string" }
+
+                  - label: "Info Block"
+                    name: "info"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string" }
+                      - { label: "Text", name: "text", widget: "markdown" }
+
+                  - label: "Embed"
+                    name: "embed"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string", required: false }
+                      - { label: "Embed URL", name: "url", widget: "string" }
+
+      - name: "merch"
+        label: "Merch"
+        file: "public/content/merch.json"
+        format: "json"
+        fields:
+          - label: "Items"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Price", name: "price", widget: "string" }
+              - { label: "Image", name: "image", widget: "image", required: false }
+              - { label: "Buy Link", name: "buyUrl", widget: "string", required: false }
+              - { label: "Description", name: "description", widget: "markdown", required: false }
+
+      - name: "gallery"
+        label: "Gallery"
+        file: "public/content/gallery.json"
+        format: "json"
+        fields:
+          - label: "Photos"
+            name: "photos"
+            widget: "list"
+            fields:
+              - { label: "Image", name: "image", widget: "image" }
+              - { label: "Caption", name: "caption", widget: "string", required: false }
