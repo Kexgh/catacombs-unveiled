@@ -1,87 +1,93 @@
-import Layout from "@/components/layout/Layout";
-import { ExternalLink } from "lucide-react";
-import merchTee from "@/assets/merch-tee.jpg";
+import { useEffect, useState } from "react";
 
-const merchItems = [
-  {
-    id: 1,
-    name: "Catacombs Skeleton Tee",
-    price: "€25",
-    image: merchTee,
-    description: "Black heavyweight tee with exclusive skeleton design.",
-  },
-];
+type MerchItem = {
+  name: string;
+  price: string;
+  image?: string;
+  buyUrl?: string;
+  description?: string;
+};
+
+type MerchJson = { items?: MerchItem[] };
 
 const Merch = () => {
-  return (
-    <Layout>
-      {/* Hero */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto">
-            <h1 className="font-display text-4xl md:text-5xl tracking-widest uppercase mb-4 animate-fade-in opacity-0">
-              Merch
-            </h1>
-            <div className="w-24 h-px bg-primary mx-auto mb-6" />
-            <p className="text-muted-foreground animate-fade-in opacity-0" style={{ animationDelay: "0.2s" }}>
-              Rep the underground. Limited drops available at shows or via DM.
-            </p>
-          </div>
-        </div>
-      </section>
+  const [items, setItems] = useState<MerchItem[]>([]);
 
-      {/* Merch Grid */}
-      <section className="py-16 bg-secondary">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {merchItems.map((item, index) => (
-              <article
-                key={item.id}
-                className="group bg-card border border-border hover:border-primary/50 overflow-hidden transition-all duration-300 animate-fade-in-up opacity-0"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
+  useEffect(() => {
+    fetch("/content/merch.json", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: MerchJson) => setItems(data.items ?? []))
+      .catch(() => setItems([]));
+  }, []);
+
+  // If you want to keep your original merch when CMS is empty:
+  // you can paste your old hardcoded array as a fallback here.
+
+  return (
+    <div className="min-h-screen bg-background pt-24 pb-16">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-16">
+          <h1 className="font-display text-4xl md:text-5xl tracking-widest uppercase mb-4 animate-fade-in opacity-0">
+            Merch
+          </h1>
+          <div className="w-24 h-px bg-primary mx-auto mb-8" />
+          <p
+            className="text-muted-foreground max-w-2xl mx-auto animate-fade-in opacity-0"
+            style={{ animationDelay: "0.2s" }}
+          >
+            Support the movement. Limited drops and exclusive designs.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map((item, index) => (
+            <div
+              key={`${item.name}-${index}`}
+              className="group bg-card border border-border hover:border-primary/50 transition-all duration-300 animate-fade-in-up opacity-0"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              {item.image ? (
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="font-display text-lg tracking-wide uppercase mb-2">
-                    {item.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-display text-xl text-primary">
-                      {item.price}
-                    </span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+              ) : null}
 
-          {/* Contact for Purchase */}
-          <div className="text-center mt-16 animate-fade-in opacity-0" style={{ animationDelay: "0.4s" }}>
-            <p className="text-muted-foreground mb-6">
-              DM us on Instagram to order, or grab at the next show.
-            </p>
-            <a
-              href="https://www.instagram.com/catacombs_irish_underground/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-display tracking-widest uppercase hover:bg-primary/90 transition-colors glow"
-            >
-              Contact on Instagram
-              <ExternalLink size={16} />
-            </a>
-          </div>
+              <div className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <h3 className="font-display text-xl tracking-wide uppercase">{item.name}</h3>
+                  <span className="text-primary font-display text-lg">{item.price}</span>
+                </div>
+
+                {item.description ? (
+                  <p className="text-muted-foreground mt-3">{item.description}</p>
+                ) : null}
+
+                {item.buyUrl ? (
+                  <a
+                    href={item.buyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center w-full mt-6 px-6 py-3 bg-primary text-primary-foreground text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors group-hover:glow"
+                  >
+                    Buy
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
-    </Layout>
+
+        {items.length === 0 ? (
+          <div className="text-center text-muted-foreground mt-12">
+            No merch listed yet. Add items in <span className="text-primary">/admin</span>.
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 };
 
