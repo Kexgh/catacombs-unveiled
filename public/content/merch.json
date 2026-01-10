@@ -1,3 +1,10 @@
 {
-  "items": []
+  "items": [
+    {
+      "name": "Omens jocks ",
+      "price": "50 euro",
+      "image": "/uploads/jocks.jpg",
+      "buyUrl": "https://thesoundhouse.ie/tc-events/catacombs-6-16-show/"
+    }
+  ]
 }
