@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Catacombs Admin</title>
 
-    <!-- Simple modern styling -->
     <style>
       :root {
         --bg: #0a0a0a;
@@ -19,8 +18,8 @@
 
       * {
         box-sizing: border-box;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
       }
 
       body {
@@ -50,21 +49,23 @@
       p {
         color: var(--muted);
         max-width: 700px;
+        margin: 0;
       }
 
       .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 16px;
-        margin-top: 32px;
+        margin-top: 24px;
       }
 
       .card {
         background: var(--panel);
         border: 1px solid var(--border);
-        padding: 20px;
+        padding: 18px;
         transition: border-color 0.2s ease, transform 0.2s ease;
         cursor: pointer;
+        user-select: none;
       }
 
       .card:hover {
@@ -74,7 +75,7 @@
 
       .card h3 {
         margin: 0 0 6px;
-        font-size: 16px;
+        font-size: 15px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
       }
@@ -82,19 +83,46 @@
       .card span {
         font-size: 13px;
         color: var(--muted);
+        display: block;
+        line-height: 1.4;
       }
 
       .note {
-        margin-top: 32px;
+        margin-top: 20px;
         font-size: 13px;
         color: var(--muted);
         border-top: 1px dashed var(--border);
         padding-top: 16px;
       }
 
-      /* Keep Decap visually separated */
-      #cms {
-        margin-top: 48px;
+      /* little helper row */
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        padding: 10px 12px;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+
+      .btn:hover {
+        border-color: var(--accent);
+        background: rgba(124, 58, 237, 0.08);
+      }
+
+      /* Anchor sits directly above the Decap app */
+      #decap-anchor {
+        height: 1px;
       }
     </style>
   </head>
@@ -103,52 +131,85 @@
     <!-- Netlify Identity (required for login / recovery) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Custom Admin Header -->
     <header>
       <div class="container">
         <h1>Catacombs Admin</h1>
         <p>
-          Manage events, merch, gallery and site content.  
-          Changes go live automatically after publishing.
+          Manage events, merch, gallery and site content. Changes go live after
+          you publish.
         </p>
 
+        <div class="actions">
+          <button class="btn" onclick="openEntry('home')">Edit Home</button>
+          <button class="btn" onclick="openEntry('about')">Edit About</button>
+          <button class="btn" onclick="openEntry('events')">Edit Events</button>
+          <button class="btn" onclick="openEntry('merch')">Edit Merch</button>
+          <button class="btn" onclick="openEntry('gallery')">Edit Gallery</button>
+        </div>
+
         <div class="grid">
-          <div class="card" onclick="scrollToCMS()">
+          <div class="card" onclick="openEntry('events')">
             <h3>Events</h3>
             <span>Add / delete shows, tickets, age restrictions</span>
           </div>
-          <div class="card" onclick="scrollToCMS()">
+
+          <div class="card" onclick="openEntry('merch')">
             <h3>Merch</h3>
             <span>Edit products, prices and links</span>
           </div>
-          <div class="card" onclick="scrollToCMS()">
+
+          <div class="card" onclick="openEntry('gallery')">
             <h3>Gallery</h3>
             <span>Upload photos from past shows</span>
           </div>
-          <div class="card" onclick="scrollToCMS()">
+
+          <div class="card" onclick="openEntry('about')">
             <h3>Home & About</h3>
             <span>Edit homepage text and descriptions</span>
           </div>
         </div>
 
         <div class="note">
-          Tip: Old events disappear automatically once the date has passed.
-          You can also hide events without deleting them.
+          Tip: Old events disappear automatically once the date has passed. You
+          can also hide events without deleting them.
         </div>
       </div>
     </header>
 
-    <!-- CMS Mount Point -->
-    <div id="cms" class="container"></div>
+    <!-- This anchor is where we scroll to (Decap renders below/around here) -->
+    <div id="decap-anchor"></div>
 
     <!-- Decap CMS -->
     <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
 
     <script>
-      function scrollToCMS() {
-        document.getElementById("cms").scrollIntoView({ behavior: "smooth" });
+      // Scroll to the actual Decap app, not an empty placeholder
+      function scrollToDecap() {
+        const anchor = document.getElementById("decap-anchor");
+        if (anchor) {
+          anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        // fallback: if anchor missing, try the Decap root
+        const app = document.querySelector(".nc-app");
+        if (app) app.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
+      // Decap uses hash routing. Because your config.yml uses:
+      // collections: - name: "site" (label "Site Content")
+      // files: home/about/events/merch/gallery
+      //
+      // Route format for file-based entries:
+      // #/collections/<collectionName>/entries/<entryName>
+      function openEntry(entryName) {
+        // Update the CMS route
+        window.location.hash = `#/collections/site/entries/${entryName}`;
+
+        // Give Decap a beat to render the new view, then scroll
+        setTimeout(scrollToDecap, 80);
+      }
+
+      // Keep your Identity handler (helps with login redirect)
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", (user) => {
           if (!user) {
@@ -158,6 +219,14 @@
           }
         });
       }
+
+      // If user lands on /admin with no hash, default to Events (optional)
+      window.addEventListener("load", () => {
+        if (!window.location.hash || window.location.hash === "#/") {
+          // comment this out if you prefer it to open the list view
+          // openEntry("events");
+        }
+      });
     </script>
   </body>
 </html>
