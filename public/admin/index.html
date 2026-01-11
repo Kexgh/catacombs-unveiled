@@ -1,19 +1,154 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Catacombs Admin</title>
+
+    <!-- Simple modern styling -->
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --panel: #111;
+        --border: #222;
+        --text: #e5e5e5;
+        --muted: #9a9a9a;
+        --accent: #7c3aed;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #0f0f0f, #0a0a0a);
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin: 0 0 8px;
+      }
+
+      p {
+        color: var(--muted);
+        max-width: 700px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-top: 32px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 20px;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+        cursor: pointer;
+      }
+
+      .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .card span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .note {
+        margin-top: 32px;
+        font-size: 13px;
+        color: var(--muted);
+        border-top: 1px dashed var(--border);
+        padding-top: 16px;
+      }
+
+      /* Keep Decap visually separated */
+      #cms {
+        margin-top: 48px;
+      }
+    </style>
   </head>
+
   <body>
-    <!-- Netlify Identity Widget (THIS is what processes invite/recovery tokens) -->
+    <!-- Netlify Identity (required for login / recovery) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Custom Admin Header -->
+    <header>
+      <div class="container">
+        <h1>Catacombs Admin</h1>
+        <p>
+          Manage events, merch, gallery and site content.  
+          Changes go live automatically after publishing.
+        </p>
+
+        <div class="grid">
+          <div class="card" onclick="scrollToCMS()">
+            <h3>Events</h3>
+            <span>Add / delete shows, tickets, age restrictions</span>
+          </div>
+          <div class="card" onclick="scrollToCMS()">
+            <h3>Merch</h3>
+            <span>Edit products, prices and links</span>
+          </div>
+          <div class="card" onclick="scrollToCMS()">
+            <h3>Gallery</h3>
+            <span>Upload photos from past shows</span>
+          </div>
+          <div class="card" onclick="scrollToCMS()">
+            <h3>Home & About</h3>
+            <span>Edit homepage text and descriptions</span>
+          </div>
+        </div>
+
+        <div class="note">
+          Tip: Old events disappear automatically once the date has passed.
+          You can also hide events without deleting them.
+        </div>
+      </div>
+    </header>
+
+    <!-- CMS Mount Point -->
+    <div id="cms" class="container"></div>
 
     <!-- Decap CMS -->
     <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
 
     <script>
+      function scrollToCMS() {
+        document.getElementById("cms").scrollIntoView({ behavior: "smooth" });
+      }
+
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", (user) => {
           if (!user) {
