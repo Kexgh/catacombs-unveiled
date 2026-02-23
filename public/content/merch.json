@@ -1,3 +1,10 @@
 {
-  "items": []
+  "items": [
+    {
+      "name": "Catacombs “Round Tower” Tee",
+      "price": "€20.00",
+      "image": "/uploads/tshirt.png",
+      "buyUrl": "https://catacombs-irish-underground.sumupstore.com/product/catacombs-round-tower-tee"
+    }
+  ]
 }
