@@ -1,15 +1,25 @@
 {
   "events": [
     {
-      "age": "All Ages",
+      "ticketUrl": "https://thesoundhouse.ie/tc-events/catacombs-6-16-show/",
       "hidden": false,
-      "title": "Catacombs 6",
+      "poster": "",
+      "sections": [],
       "date": "2026-02-21T13:30:00.000+00:00",
       "venue": "The Soundhouse",
-      "ticketUrl": "https://thesoundhouse.ie/tc-events/catacombs-6-16-show/",
-      "poster": "",
-      "gallery": [],
-      "sections": []
+      "gallery": [
+        {
+          "image": "/uploads/tshirt.png"
+        },
+        {
+          "image": "/uploads/tshirt.png"
+        },
+        {
+          "image": "/uploads/tshirt.png"
+        }
+      ],
+      "title": "Catacombs 6",
+      "age": "All Ages"
     }
   ]
 }
