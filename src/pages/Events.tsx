@@ -2,38 +2,75 @@ import Layout from "@/components/layout/Layout";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+type GalleryPhotoNormalized = { image: string; caption?: string };
+
 type EventItem = {
   title: string;
-  date: string; // ISO string from CMS datetime widget
+  date: string; // ISO string
   venue: string;
   ticketUrl?: string;
   poster?: string;
   hidden?: boolean;
+
+  // gallery can be MANY shapes depending on CMS config history
+  gallery?: unknown;
+  galleryPhotos?: unknown;
+  photos?: unknown;
 };
 
 type EventsJson = { events?: EventItem[] };
 
-type GalleryPhoto = { image: string; caption?: string };
-type GalleryJson = { photos?: GalleryPhoto[] };
+function normalizeGallery(event: EventItem): GalleryPhotoNormalized[] {
+  const raw =
+    (event.gallery as unknown) ??
+    (event.galleryPhotos as unknown) ??
+    (event.photos as unknown) ??
+    [];
+
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .map((item) => {
+      // Case 1: ["\/uploads\/x.png", ...]
+      if (typeof item === "string" && item.trim().length > 0) {
+        return { image: item };
+      }
+
+      // Case 2: [{ image: "...", caption?: "..." }, ...]
+      if (item && typeof item === "object") {
+        const anyItem = item as Record<string, unknown>;
+        const image =
+          (typeof anyItem.image === "string" && anyItem.image) ||
+          (typeof anyItem.url === "string" && anyItem.url) ||
+          (typeof anyItem.src === "string" && anyItem.src) ||
+          "";
+
+        if (!image) return null;
+
+        const caption =
+          typeof anyItem.caption === "string" ? anyItem.caption : undefined;
+
+        return { image, caption };
+      }
+
+      return null;
+    })
+    .filter((x): x is GalleryPhotoNormalized => Boolean(x));
+}
 
 const Events = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
 
   useEffect(() => {
     fetch("/content/events.json", { cache: "no-store" })
       .then((r) => r.json())
       .then((data: EventsJson) => setEvents(data.events ?? []))
       .catch(() => setEvents([]));
-
-    fetch("/content/gallery.json", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((data: GalleryJson) => setPhotos(data.photos ?? []))
-      .catch(() => setPhotos([]));
   }, []);
 
   const pastEvents = useMemo(() => {
     const now = new Date();
+
     return (events ?? [])
       .filter((e) => !e.hidden)
       .filter((e) => {
@@ -42,6 +79,15 @@ const Events = () => {
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [events]);
+
+  const galleryEvents = useMemo(() => {
+    return pastEvents
+      .map((e) => ({
+        event: e,
+        photos: normalizeGallery(e),
+      }))
+      .filter((x) => x.photos.length > 0);
+  }, [pastEvents]);
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -132,30 +178,56 @@ const Events = () => {
               <div className="w-16 h-px bg-primary" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {photos.map((img, index) => (
-                <div
-                  key={`${img.image}-${index}`}
-                  className="group overflow-hidden border border-border bg-card animate-fade-in-up opacity-0"
-                  style={{ animationDelay: `${index * 0.08}s` }}
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={img.image}
-                      alt={img.caption ?? `Gallery image ${index + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {photos.length === 0 ? (
+            {galleryEvents.length === 0 ? (
               <div className="text-center text-muted-foreground mt-8">
-                No gallery photos yet. Add them in{" "}
+                No gallery photos yet. Add them to a past event in{" "}
                 <span className="text-primary">/admin</span>.
               </div>
-            ) : null}
+            ) : (
+              <div className="space-y-12">
+                {galleryEvents.map(({ event, photos }, eventIndex) => (
+                  <div key={`${event.title}-${event.date}-${eventIndex}`}>
+                    <div className="mb-4">
+                      <h3 className="font-display text-lg md:text-xl tracking-widest uppercase">
+                        {event.title}
+                      </h3>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {formatDate(event.date)} • {event.venue}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {photos.map((img, imgIndex) => (
+                        <div
+                          key={`${img.image}-${imgIndex}`}
+                          className="group overflow-hidden border border-border bg-card animate-fade-in-up opacity-0"
+                          style={{
+                            animationDelay: `${
+                              eventIndex * 0.12 + imgIndex * 0.06
+                            }s`,
+                          }}
+                        >
+                          <div className="aspect-square overflow-hidden">
+                            <img
+                              src={img.image}
+                              alt={img.caption ?? `${event.title} photo ${imgIndex + 1}`}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          </div>
+
+                          {img.caption ? (
+                            <div className="p-3 text-sm text-muted-foreground">
+                              {img.caption}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </div>
