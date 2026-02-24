@@ -58,7 +58,16 @@ collections:
               - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
               - { label: "Poster", name: "poster", widget: "image", required: false }
 
-              # ✅ NEW: Age restriction dropdown
+              # ✅ NEW: Gallery lives inside the event (so past events can get photos later)
+              - label: "Gallery Photos"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "Image", name: "image", widget: "image" }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
+
+              # ✅ Age restriction dropdown
               - label: "Age Restriction"
                 name: "age"
                 widget: "select"
@@ -111,15 +120,3 @@ collections:
               - { label: "Image", name: "image", widget: "image", required: false }
               - { label: "Buy Link", name: "buyUrl", widget: "string", required: false }
               - { label: "Description", name: "description", widget: "markdown", required: false }
-
-      - name: "gallery"
-        label: "Gallery"
-        file: "public/content/gallery.json"
-        format: "json"
-        fields:
-          - label: "Photos"
-            name: "photos"
-            widget: "list"
-            fields:
-              - { label: "Image", name: "image", widget: "image" }
-              - { label: "Caption", name: "caption", widget: "string", required: false }
