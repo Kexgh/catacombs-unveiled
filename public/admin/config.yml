@@ -2,24 +2,30 @@ backend:
   name: git-gateway
   branch: main
 
-# Where uploaded images go in your repo
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
+# Optional quality-of-life (safe):
+locale: "en"
+editor:
+  preview: false
+
 collections:
   - name: "site"
-    label: "Site Content"
+    label: "Catacombs Website Content"
     files:
       - name: "home"
-        label: "Home"
+        label: "Home Page"
         file: "public/content/home.json"
         format: "json"
         fields:
-          - { label: "Hero Title", name: "heroTitle", widget: "string" }
-          - { label: "Hero Subtitle", name: "heroSubtitle", widget: "string", required: false }
+          - { label: "Hero Title", name: "heroTitle", widget: "string", hint: "Big headline on the homepage." }
+          - { label: "Hero Subtitle", name: "heroSubtitle", widget: "string", required: false, hint: "Smaller text under the headline." }
+
           - label: "Homepage Sections (add/reorder)"
             name: "sections"
             widget: "list"
+            summary: "{{fields.heading}}"
             types:
               - label: "Text Section"
                 name: "text"
@@ -27,47 +33,40 @@ collections:
                 fields:
                   - { label: "Heading", name: "heading", widget: "string" }
                   - { label: "Text", name: "text", widget: "markdown" }
+
               - label: "CTA Section"
                 name: "cta"
                 widget: "object"
                 fields:
                   - { label: "Heading", name: "heading", widget: "string" }
                   - { label: "Button Text", name: "buttonText", widget: "string" }
-                  - { label: "Button Link", name: "buttonLink", widget: "string" }
+                  - { label: "Button Link", name: "buttonLink", widget: "string", hint: "Example: /events or https://..." }
 
       - name: "about"
-        label: "About"
+        label: "About Page"
         file: "public/content/about.json"
         format: "json"
         fields:
           - { label: "Title", name: "title", widget: "string" }
-          - { label: "Body", name: "body", widget: "markdown" }
+          - { label: "Body", name: "body", widget: "markdown", hint: "Main about text. You can use headings and links." }
 
       - name: "events"
-        label: "Events"
+        label: "Events (Add + Edit)"
         file: "public/content/events.json"
         format: "json"
         fields:
-          - label: "Upcoming Events"
+          - label: "Upcoming / Past Events List"
             name: "events"
             widget: "list"
+            summary: "{{fields.title}} — {{fields.date}} — {{fields.venue}}"
+            hint: "Add new events here. Old events stay here too (you can add gallery photos later)."
             fields:
-              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Title", name: "title", widget: "string", hint: "Example: Catacombs 7" }
               - { label: "Date", name: "date", widget: "datetime" }
               - { label: "Venue", name: "venue", widget: "string" }
               - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
-              - { label: "Poster", name: "poster", widget: "image", required: false }
+              - { label: "Poster", name: "poster", widget: "image", required: false, hint: "Main event poster image." }
 
-              # ✅ NEW: Gallery lives inside the event (so past events can get photos later)
-              - label: "Gallery Photos"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - { label: "Image", name: "image", widget: "image" }
-                  - { label: "Caption", name: "caption", widget: "string", required: false }
-
-              # ✅ Age restriction dropdown
               - label: "Age Restriction"
                 name: "age"
                 widget: "select"
@@ -75,48 +74,59 @@ collections:
                 default: "18+"
                 required: true
 
-              # ✅ Optional: hide without deleting
-              - { label: "Hidden", name: "hidden", widget: "boolean", default: false, required: false }
+              - { label: "Hidden (don’t show on site)", name: "hidden", widget: "boolean", default: false, required: false }
 
-              - label: "Sections (add/reorder blocks)"
-                name: "sections"
+              - label: "Gallery Photos"
+                name: "gallery"
                 widget: "list"
-                types:
-                  - label: "Lineup"
-                    name: "lineup"
-                    widget: "object"
-                    fields:
-                      - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
-                      - label: "Artists"
-                        name: "artists"
-                        widget: "list"
-                        field: { label: "Artist", name: "artist", widget: "string" }
+                required: false
+                summary: "{{fields.caption}}"
+                hint: "Add photos after the event. These appear in the gallery on the website."
+                fields:
+                  - { label: "Image", name: "image", widget: "image" }
+                  - { label: "Caption (optional)", name: "caption", widget: "string", required: false }
 
-                  - label: "Info Block"
-                    name: "info"
-                    widget: "object"
-                    fields:
-                      - { label: "Heading", name: "heading", widget: "string" }
-                      - { label: "Text", name: "text", widget: "markdown" }
+          - label: "Event Page Blocks (add/reorder)"
+            name: "sections"
+            widget: "list"
+            summary: "{{fields.heading}}"
+            types:
+              - label: "Lineup"
+                name: "lineup"
+                widget: "object"
+                fields:
+                  - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
+                  - label: "Artists"
+                    name: "artists"
+                    widget: "list"
+                    field: { label: "Artist", name: "artist", widget: "string" }
 
-                  - label: "Embed"
-                    name: "embed"
-                    widget: "object"
-                    fields:
-                      - { label: "Heading", name: "heading", widget: "string", required: false }
-                      - { label: "Embed URL", name: "url", widget: "string" }
+              - label: "Info Block"
+                name: "info"
+                widget: "object"
+                fields:
+                  - { label: "Heading", name: "heading", widget: "string" }
+                  - { label: "Text", name: "text", widget: "markdown" }
+
+              - label: "Embed"
+                name: "embed"
+                widget: "object"
+                fields:
+                  - { label: "Heading (optional)", name: "heading", widget: "string", required: false }
+                  - { label: "Embed URL", name: "url", widget: "string", hint: "Spotify/SoundCloud/YouTube embed URL." }
 
       - name: "merch"
-        label: "Merch"
+        label: "Merch Store"
         file: "public/content/merch.json"
         format: "json"
         fields:
           - label: "Items"
             name: "items"
             widget: "list"
+            summary: "{{fields.name}} — {{fields.price}}"
             fields:
               - { label: "Name", name: "name", widget: "string" }
-              - { label: "Price", name: "price", widget: "string" }
+              - { label: "Price", name: "price", widget: "string", hint: "Example: €25" }
               - { label: "Image", name: "image", widget: "image", required: false }
               - { label: "Buy Link", name: "buyUrl", widget: "string", required: false }
               - { label: "Description", name: "description", widget: "markdown", required: false }

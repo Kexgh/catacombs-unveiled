@@ -1,19 +1,29 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="robots" content="noindex" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catacombs Admin</title>
-  </head>
-  <body>
-    <!-- Netlify Identity Widget (THIS is what processes invite/recovery tokens) -->
+
+    <!-- Netlify Identity (for Git Gateway login) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
+    <!-- Your custom admin styling -->
+    <link rel="stylesheet" href="/admin/cms.css" />
+  </head>
+  <body>
+    <!-- Decap mounts itself; no markup needed -->
     <script>
+      // Make the UI feel less "developer-y"
+      // Adds your stylesheet into the Preview pane too (optional but nice)
+      if (window.CMS) {
+        CMS.registerPreviewStyle("/admin/cms.css");
+      }
+
+      // If user logs in, send them straight to the CMS
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", (user) => {
           if (!user) {

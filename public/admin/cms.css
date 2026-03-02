@@ -1,0 +1,79 @@
+/* Catacombs Admin - lightweight “make it friendly” skin */
+
+:root {
+  --bg: #0b0b0f;
+  --panel: #12121a;
+  --text: #f2f2f7;
+  --muted: rgba(242, 242, 247, 0.7);
+  --border: rgba(242, 242, 247, 0.12);
+  --accent: #c4b5fd; /* soft purple */
+}
+
+/* Base */
+body {
+  background: var(--bg) !important;
+}
+
+/* Main app shell */
+[class*="AppHeader"], header {
+  background: rgba(18, 18, 26, 0.9) !important;
+  border-bottom: 1px solid var(--border) !important;
+  backdrop-filter: blur(10px);
+}
+
+* {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+
+/* Buttons */
+button,
+[class*="Button"] button,
+[class*="Button"] {
+  border-radius: 12px !important;
+}
+
+button[class*="primary"],
+button[class*="Primary"],
+[class*="Button"] [class*="primary"] {
+  background: var(--accent) !important;
+  color: #111 !important;
+  border: none !important;
+}
+
+/* Cards/panels */
+[class*="Card"],
+[class*="ContentCard"],
+[class*="Sidebar"],
+[class*="MainContent"],
+[class*="ControlPane"],
+[class*="Pane"] {
+  border-radius: 16px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Text */
+h1, h2, h3, label {
+  color: var(--text) !important;
+}
+p, span, small, div {
+  color: var(--muted);
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text) !important;
+}
+
+textarea {
+  min-height: 120px !important;
+}
+
+/* Make list rows easier to scan */
+[class*="ListCard"] {
+  padding: 14px !important;
+}
