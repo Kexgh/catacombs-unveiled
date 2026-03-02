@@ -127,3 +127,37 @@ html, body {
 #nc-root [class*="Card"] {
   padding: 14px !important;
 }
+
+/* ===== Fix: editor only using left half / blank right side ===== */
+
+/* Remove any centering/width constraints so the app can fill the window */
+#nc-root [class*="AppContent"],
+#nc-root [class*="MainPane"],
+#nc-root main {
+  max-width: none !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* Decap uses split panes: ControlPane (editor) + PreviewPane (preview).
+   Force editor to take full width */
+#nc-root [class*="SplitPane"],
+#nc-root [class*="SplitPane"] > div {
+  width: 100% !important;
+}
+
+/* Hide preview pane completely (prevents the empty right side) */
+#nc-root [class*="PreviewPane"],
+#nc-root [class*="Preview"],
+#nc-root [class*="Pane"][class*="preview"] {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Make the editor pane expand */
+#nc-root [class*="ControlPane"],
+#nc-root [class*="EditorContainer"] {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+}
