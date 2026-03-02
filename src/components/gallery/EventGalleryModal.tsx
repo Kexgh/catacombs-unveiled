@@ -4,6 +4,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type GalleryPhotoNormalized = { image: string; caption?: string };
@@ -21,35 +23,67 @@ export default function EventGalleryModal({
   subtitle?: string;
   photos: GalleryPhotoNormalized[];
 }) {
+  const close = () => onOpenChange(false);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
           // Fullscreen-ish modal
-          "w-[95vw] max-w-6xl",
+          "w-[100vw] sm:w-[95vw] max-w-6xl",
+          "h-[100vh] sm:h-auto",
           "p-0 overflow-hidden",
           "bg-background/95 border-border"
         )}
       >
-        {/* Sticky header */}
-        <div className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur">
-          <DialogHeader className="px-4 py-4 md:px-6">
-            <DialogTitle className="font-display text-lg md:text-xl">
-              {title}
-            </DialogTitle>
-            {subtitle ? (
-              <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
-            ) : null}
-            <p className="text-xs text-muted-foreground mt-2">
-              {photos.length} photo{photos.length === 1 ? "" : "s"}
-            </p>
+        {/* Sticky header with real close controls */}
+        <div className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
+          <DialogHeader className="px-3 py-3 sm:px-6 sm:py-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <DialogTitle className="font-display text-lg sm:text-xl truncate">
+                  {title}
+                </DialogTitle>
+                {subtitle ? (
+                  <p className="text-sm text-muted-foreground mt-1 truncate">
+                    {subtitle}
+                  </p>
+                ) : null}
+                <p className="text-xs text-muted-foreground mt-2">
+                  {photos.length} photo{photos.length === 1 ? "" : "s"}
+                </p>
+              </div>
+
+              {/* Mobile-first close controls */}
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={close}
+                  className="sm:hidden"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Back
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={close}
+                  aria-label="Close gallery"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </DialogHeader>
         </div>
 
-        {/* Scrollable body */}
-        <div className="max-h-[80vh] overflow-y-auto px-4 pb-6 md:px-6">
-          {/* Desktop grid, mobile stacked */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mt-4">
+        {/* Scrollable body (works on mobile) */}
+        <div className="flex-1 max-h-[calc(100vh-76px)] sm:max-h-[80vh] overflow-y-auto px-3 pb-6 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4">
             {photos.map((p, idx) => (
               <figure
                 key={`${p.image}-${idx}`}
