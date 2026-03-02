@@ -1,79 +1,129 @@
-/* Catacombs Admin - lightweight “make it friendly” skin */
+/* Catacombs Admin - Decap CMS skin (safe selectors, no global "div color" stuff) */
 
 :root {
-  --bg: #0b0b0f;
-  --panel: #12121a;
-  --text: #f2f2f7;
-  --muted: rgba(242, 242, 247, 0.7);
-  --border: rgba(242, 242, 247, 0.12);
-  --accent: #c4b5fd; /* soft purple */
+  --bg: #0b0b10;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-strong: rgba(255, 255, 255, 0.10);
+  --border: rgba(255, 255, 255, 0.14);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+  --accent: #c4b5fd;
+  --danger: #fb7185;
+  --radius: 16px;
 }
 
-/* Base */
-body {
-  background: var(--bg) !important;
+/* Page background */
+html, body {
+  background: radial-gradient(1200px 800px at 25% 10%, rgba(196,181,253,0.08), transparent 60%),
+              radial-gradient(1200px 800px at 80% 30%, rgba(59,130,246,0.06), transparent 60%),
+              var(--bg) !important;
 }
 
-/* Main app shell */
-[class*="AppHeader"], header {
-  background: rgba(18, 18, 26, 0.9) !important;
+/* Mount root */
+#nc-root {
+  min-height: 100vh;
+}
+
+/* Generic typography improvements (SAFE) */
+#nc-root h1, #nc-root h2, #nc-root h3, #nc-root label {
+  color: var(--text) !important;
+  letter-spacing: 0.2px;
+}
+#nc-root p, #nc-root small {
+  color: var(--muted) !important;
+}
+
+/* Make the app feel less cramped + more centered */
+#nc-root [class*="AppContent"], 
+#nc-root [class*="MainPane"],
+#nc-root main {
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+}
+
+/* Top bar/header */
+#nc-root header,
+#nc-root [class*="AppHeader"] {
+  background: rgba(12, 12, 18, 0.75) !important;
   border-bottom: 1px solid var(--border) !important;
   backdrop-filter: blur(10px);
 }
 
-* {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+/* Sidebar / collections pane */
+#nc-root [class*="Sidebar"],
+#nc-root [class*="Collection"],
+#nc-root [class*="Collections"] {
+  background: transparent !important;
 }
 
-/* Buttons */
-button,
-[class*="Button"] button,
-[class*="Button"] {
-  border-radius: 12px !important;
-}
-
-button[class*="primary"],
-button[class*="Primary"],
-[class*="Button"] [class*="primary"] {
-  background: var(--accent) !important;
-  color: #111 !important;
-  border: none !important;
-}
-
-/* Cards/panels */
-[class*="Card"],
-[class*="ContentCard"],
-[class*="Sidebar"],
-[class*="MainContent"],
-[class*="ControlPane"],
-[class*="Pane"] {
-  border-radius: 16px !important;
+/* Cards / list items / panes */
+#nc-root [class*="Card"],
+#nc-root [class*="Pane"],
+#nc-root [class*="ControlPane"],
+#nc-root [class*="ListCard"],
+#nc-root [class*="ContentCard"],
+#nc-root [class*="EntryCard"] {
+  background: var(--panel) !important;
   border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30) !important;
 }
 
-/* Text */
-h1, h2, h3, label {
+/* Make list rows actually readable (your screenshot shows white blocks) */
+#nc-root [class*="ListCard"] *,
+#nc-root [class*="EntryCard"] * {
   color: var(--text) !important;
-}
-p, span, small, div {
-  color: var(--muted);
 }
 
 /* Inputs */
-input,
-textarea,
-select {
-  border-radius: 12px !important;
-  border: 1px solid var(--border) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+#nc-root input,
+#nc-root textarea,
+#nc-root select {
+  background: rgba(0,0,0,0.25) !important;
   color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
 }
 
-textarea {
-  min-height: 120px !important;
+#nc-root textarea {
+  min-height: 140px !important;
 }
 
-/* Make list rows easier to scan */
-[class*="ListCard"] {
+/* Buttons */
+#nc-root button,
+#nc-root [class*="Button"] {
+  border-radius: 14px !important;
+}
+
+#nc-root button[class*="primary"],
+#nc-root button[class*="Primary"],
+#nc-root [class*="PrimaryButton"] {
+  background: var(--accent) !important;
+  color: #121218 !important;
+  border: none !important;
+}
+
+#nc-root button[class*="danger"],
+#nc-root [class*="DangerButton"] {
+  background: rgba(251, 113, 133, 0.15) !important;
+  border: 1px solid rgba(251, 113, 133, 0.35) !important;
+  color: #ffd1d8 !important;
+}
+
+/* Reduce “washed out” disabled look */
+#nc-root [disabled] {
+  opacity: 0.65 !important;
+}
+
+/* Make the editor page less “tiny panel in the middle” */
+#nc-root [class*="ControlPane"],
+#nc-root [class*="EditorContainer"],
+#nc-root form {
+  max-width: 900px !important;
+  margin: 0 auto !important;
+}
+
+/* Small QoL: tighten huge vertical whitespace */
+#nc-root [class*="Card"] {
   padding: 14px !important;
 }
