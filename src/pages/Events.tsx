@@ -1,4 +1,6 @@
 import Layout from "@/components/layout/Layout";
+import EventGalleryModal from "@/components/gallery/EventGalleryModal";
+import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -31,7 +33,7 @@ function normalizeGallery(event: EventItem): GalleryPhotoNormalized[] {
 
   return raw
     .map((item) => {
-      // Case 1: ["\/uploads\/x.png", ...]
+      // Case 1: ["/uploads/x.png", ...]
       if (typeof item === "string" && item.trim().length > 0) {
         return { image: item };
       }
@@ -40,15 +42,17 @@ function normalizeGallery(event: EventItem): GalleryPhotoNormalized[] {
       if (item && typeof item === "object") {
         const anyItem = item as Record<string, unknown>;
         const image =
-          (typeof anyItem.image === "string" && anyItem.image) ||
-          (typeof anyItem.url === "string" && anyItem.url) ||
-          (typeof anyItem.src === "string" && anyItem.src) ||
+          (typeof anyItem.image === "string" && (anyItem.image as string)) ||
+          (typeof anyItem.url === "string" && (anyItem.url as string)) ||
+          (typeof anyItem.src === "string" && (anyItem.src as string)) ||
           "";
 
         if (!image) return null;
 
         const caption =
-          typeof anyItem.caption === "string" ? anyItem.caption : undefined;
+          typeof anyItem.caption === "string"
+            ? (anyItem.caption as string)
+            : undefined;
 
         return { image, caption };
       }
@@ -58,8 +62,104 @@ function normalizeGallery(event: EventItem): GalleryPhotoNormalized[] {
     .filter((x): x is GalleryPhotoNormalized => Boolean(x));
 }
 
+function GalleryPreview({
+  photos,
+  title,
+  onOpen,
+}: {
+  photos: GalleryPhotoNormalized[];
+  title: string;
+  onOpen: () => void;
+}) {
+  const preview = photos.slice(0, 3);
+  const remaining = Math.max(0, photos.length - preview.length);
+
+  return (
+    <div className="mt-4">
+      {/* Desktop: 1 big + 2 stacked */}
+      <div className="hidden md:grid grid-cols-3 grid-rows-2 gap-3">
+        <button
+          type="button"
+          onClick={onOpen}
+          className="col-span-2 row-span-2 overflow-hidden rounded-lg border border-border bg-card/40 hover:bg-card/60 transition"
+          aria-label={`Open full gallery for ${title}`}
+        >
+          <img
+            src={preview[0]?.image}
+            alt={`${title} photo 1`}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpen}
+          className="overflow-hidden rounded-lg border border-border bg-card/40 hover:bg-card/60 transition"
+          aria-label={`Open full gallery for ${title}`}
+        >
+          <img
+            src={preview[1]?.image}
+            alt={`${title} photo 2`}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpen}
+          className="relative overflow-hidden rounded-lg border border-border bg-card/40 hover:bg-card/60 transition"
+          aria-label={`Open full gallery for ${title}`}
+        >
+          <img
+            src={preview[2]?.image}
+            alt={`${title} photo 3`}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+          {remaining > 0 ? (
+            <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+              <span className="text-sm font-medium tracking-wide">
+                +{remaining} more
+              </span>
+            </div>
+          ) : null}
+        </button>
+      </div>
+
+      {/* Mobile: 3 stacked */}
+      <div className="md:hidden grid grid-cols-1 gap-3">
+        {preview.map((p, i) => (
+          <button
+            key={`${p.image}-${i}`}
+            type="button"
+            onClick={onOpen}
+            className="overflow-hidden rounded-lg border border-border bg-card/40 hover:bg-card/60 transition"
+            aria-label={`Open full gallery for ${title}`}
+          >
+            <img
+              src={p.image}
+              alt={`${title} photo ${i + 1}`}
+              loading="lazy"
+              className="w-full h-56 object-cover"
+            />
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <Button onClick={onOpen} className="w-full md:w-auto">
+          View full gallery ({photos.length}) →
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 const Events = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [openEventKey, setOpenEventKey] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/content/events.json", { cache: "no-store" })
@@ -70,7 +170,6 @@ const Events = () => {
 
   const pastEvents = useMemo(() => {
     const now = new Date();
-
     return (events ?? [])
       .filter((e) => !e.hidden)
       .filter((e) => {
@@ -94,143 +193,126 @@ const Events = () => {
     return isNaN(d.getTime()) ? iso : d.toLocaleDateString();
   };
 
+  const currentGallery = useMemo(() => {
+    if (!openEventKey) return null;
+    const found = galleryEvents.find((x) => x.event.title === openEventKey);
+    return found ?? null;
+  }, [openEventKey, galleryEvents]);
+
   return (
     <Layout>
-      <div className="min-h-screen bg-background pt-24 pb-16">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h1 className="font-display text-4xl md:text-5xl tracking-widest uppercase mb-4 animate-fade-in opacity-0">
-              Events
-            </h1>
-            <div className="w-24 h-px bg-primary mx-auto mb-8" />
-            <p
-              className="text-muted-foreground max-w-2xl mx-auto animate-fade-in opacity-0"
-              style={{ animationDelay: "0.2s" }}
-            >
-              Past shows, moments, and memories from the underground.
-            </p>
-          </div>
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        <header className="mb-10">
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight">
+            Events
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            Past shows, moments, and memories from the underground.
+          </p>
+        </header>
 
-          {/* Past Events */}
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="font-display text-2xl md:text-3xl tracking-widest uppercase">
-                Past Events
-              </h2>
-              <div className="w-16 h-px bg-primary" />
-            </div>
+        {/* Past Events */}
+        <section className="mb-12">
+          <h2 className="font-display text-xl tracking-wide">Past Events</h2>
 
-            <div className="grid gap-6 max-w-3xl mx-auto">
-              {pastEvents.map((event, index) => (
-                <article
-                  key={`${event.title}-${event.date}-${index}`}
-                  className="bg-card border border-border hover:border-primary/50 p-6 md:p-8 transition-all duration-300 animate-fade-in-up opacity-0"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div className="flex-1">
-                      <h3 className="font-display text-xl md:text-2xl tracking-wide uppercase mb-3">
-                        {event.title}
-                      </h3>
-
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Calendar size={14} />
-                          <span>{formatDate(event.date)}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin size={14} />
-                          <span>{event.venue}</span>
-                        </div>
-                      </div>
+          <div className="mt-4 space-y-4">
+            {pastEvents.map((event) => (
+              <div
+                key={`${event.title}-${event.date}`}
+                className="rounded-lg border border-border bg-card/40 p-4"
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <div>
+                    <h3 className="font-display text-lg">{event.title}</h3>
+                    <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(event.date)}
+                      </span>
+                      <span className="hidden sm:inline">•</span>
+                      <span className="inline-flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {event.venue}
+                      </span>
                     </div>
-
-                    {event.ticketUrl ? (
-                      <a
-                        href={event.ticketUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-secondary hover:bg-secondary/80 text-sm tracking-widest uppercase transition-colors"
-                      >
-                        <Ticket size={14} />
-                        Tickets
-                      </a>
-                    ) : null}
                   </div>
-                </article>
-              ))}
 
-              {pastEvents.length === 0 ? (
-                <div className="text-center text-muted-foreground">
-                  No past events yet (or none published). Add events in{" "}
-                  <span className="text-primary">/admin</span>.
+                  {event.ticketUrl ? (
+                    <a
+                      href={event.ticketUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                    >
+                      <Ticket className="h-4 w-4" />
+                      Tickets
+                    </a>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          </section>
-
-          {/* Gallery */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="font-display text-2xl md:text-3xl tracking-widest uppercase">
-                Gallery
-              </h2>
-              <div className="w-16 h-px bg-primary" />
-            </div>
-
-            {galleryEvents.length === 0 ? (
-              <div className="text-center text-muted-foreground mt-8">
-                No gallery photos yet. Add them to a past event in{" "}
-                <span className="text-primary">/admin</span>.
               </div>
-            ) : (
-              <div className="space-y-12">
-                {galleryEvents.map(({ event, photos }, eventIndex) => (
-                  <div key={`${event.title}-${event.date}-${eventIndex}`}>
-                    <div className="mb-4">
-                      <h3 className="font-display text-lg md:text-xl tracking-widest uppercase">
-                        {event.title}
-                      </h3>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {formatDate(event.date)} • {event.venue}
+            ))}
+
+            {pastEvents.length === 0 ? (
+              <p className="text-muted-foreground">
+                No past events yet (or none published). Add events in /admin.
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        {/* Gallery */}
+        <section>
+          <h2 className="font-display text-xl tracking-wide">Gallery</h2>
+
+          {galleryEvents.length === 0 ? (
+            <p className="mt-4 text-muted-foreground">
+              No gallery photos yet. Add them to a past event in /admin.
+            </p>
+          ) : (
+            <div className="mt-6 space-y-10">
+              {galleryEvents.map(({ event, photos }) => {
+                const key = event.title; // stable enough for your CMS use
+                return (
+                  <div
+                    key={`${event.title}-${event.date}`}
+                    className="rounded-lg border border-border bg-card/30 p-4 md:p-6"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
+                      <div>
+                        <h3 className="font-display text-lg md:text-xl">
+                          {event.title}
+                        </h3>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {formatDate(event.date)} • {event.venue}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {photos.map((img, imgIndex) => (
-                        <div
-                          key={`${img.image}-${imgIndex}`}
-                          className="group overflow-hidden border border-border bg-card animate-fade-in-up opacity-0"
-                          style={{
-                            animationDelay: `${
-                              eventIndex * 0.12 + imgIndex * 0.06
-                            }s`,
-                          }}
-                        >
-                          <div className="aspect-square overflow-hidden">
-                            <img
-                              src={img.image}
-                              alt={img.caption ?? `${event.title} photo ${imgIndex + 1}`}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                          </div>
-
-                          {img.caption ? (
-                            <div className="p-3 text-sm text-muted-foreground">
-                              {img.caption}
-                            </div>
-                          ) : null}
-                        </div>
-                      ))}
-                    </div>
+                    <GalleryPreview
+                      photos={photos}
+                      title={event.title}
+                      onOpen={() => setOpenEventKey(key)}
+                    />
                   </div>
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
-      </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* Fullscreen gallery modal */}
+        <EventGalleryModal
+          open={Boolean(openEventKey)}
+          onOpenChange={(v) => setOpenEventKey(v ? openEventKey : null)}
+          title={currentGallery?.event.title ?? ""}
+          subtitle={
+            currentGallery
+              ? `${formatDate(currentGallery.event.date)} • ${currentGallery.event.venue}`
+              : ""
+          }
+          photos={currentGallery?.photos ?? []}
+        />
+      </main>
     </Layout>
   );
 };
