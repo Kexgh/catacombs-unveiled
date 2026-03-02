@@ -5,34 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catacombs Admin</title>
 
-    <!-- Netlify Identity (for Git Gateway login) -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-
-    <!-- Your custom admin styling -->
+    <!-- Optional: your custom skin -->
     <link rel="stylesheet" href="/admin/cms.css" />
-  </head>
-  <body>
-    <!-- Decap mounts itself; no markup needed -->
-    <script>
-      // Make the UI feel less "developer-y"
-      // Adds your stylesheet into the Preview pane too (optional but nice)
-      if (window.CMS) {
-        CMS.registerPreviewStyle("/admin/cms.css");
-      }
 
-      // If user logs in, send them straight to the CMS
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", (user) => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
+    <!-- Netlify Identity (needed for git-gateway login) -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Decap CMS (pin a stable version + use jsdelivr, less blocked than unpkg) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/decap-cms@3.4.0/dist/decap-cms.js"></script>
+  </head>
+
+  <body>
+    <!-- Decap CMS mounts into this -->
+    <div id="nc-root"></div>
+
+    <script>
+      // Optional: style the preview pane too
+      window.addEventListener("load", () => {
+        if (window.CMS) {
+          CMS.registerPreviewStyle("/admin/cms.css");
+        }
+      });
     </script>
   </body>
 </html>
