@@ -1,0 +1,7 @@
+#nc-root, #nc-root * {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+#nc-root input, #nc-root textarea, #nc-root select { border-radius: 12px !important; }
+#nc-root button { border-radius: 12px !important; }
+#nc-root label { font-weight: 600 !important; }
+#nc-root textarea { min-height: 140px !important; }
