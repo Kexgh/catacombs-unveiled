@@ -1,22 +1,7 @@
-/* ===== Safe fix: make editor full width, hide preview pane ===== */
-
-/* Don’t constrain layout */
-#nc-root [class*="AppContent"],
-#nc-root [class*="MainPane"],
-#nc-root main {
-  max-width: none !important;
-  margin: 0 !important;
-  width: 100% !important;
+#nc-root, #nc-root * {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
 }
-
-/* Hide ONLY the preview pane */
-#nc-root [class*="PreviewPane"] {
-  display: none !important;
-}
-
-/* Let the editor pane take all the space */
-#nc-root [class*="ControlPane"] {
-  width: 100% !important;
-  max-width: none !important;
-  flex: 1 1 auto !important;
-}
+#nc-root input, #nc-root textarea, #nc-root select { border-radius: 12px !important; }
+#nc-root button { border-radius: 12px !important; }
+#nc-root label { font-weight: 600 !important; }
+#nc-root textarea { min-height: 140px !important; }

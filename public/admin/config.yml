@@ -5,8 +5,8 @@ backend:
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
-# Optional quality-of-life (safe):
 locale: "en"
+
 editor:
   preview: false
 
@@ -19,53 +19,112 @@ collections:
         file: "public/content/home.json"
         format: "json"
         fields:
-          - { label: "Hero Title", name: "heroTitle", widget: "string", hint: "Big headline on the homepage." }
-          - { label: "Hero Subtitle", name: "heroSubtitle", widget: "string", required: false, hint: "Smaller text under the headline." }
+          - label: "Homepage Headline"
+            name: "heroTitle"
+            widget: "string"
+            hint: "Main headline on the homepage."
 
-          - label: "Homepage Sections (add/reorder)"
+          - label: "Homepage Subtitle (optional)"
+            name: "heroSubtitle"
+            widget: "string"
+            required: false
+            hint: "Short line under the main headline."
+
+          - label: "Homepage Sections (add / reorder)"
             name: "sections"
             widget: "list"
+            collapsed: true
             summary: "{{fields.heading}}"
+            hint: "Tip: Keep sections short. You can drag to reorder."
             types:
               - label: "Text Section"
                 name: "text"
                 widget: "object"
                 fields:
-                  - { label: "Heading", name: "heading", widget: "string" }
-                  - { label: "Text", name: "text", widget: "markdown" }
+                  - label: "Section Heading"
+                    name: "heading"
+                    widget: "string"
+                  - label: "Section Text"
+                    name: "text"
+                    widget: "markdown"
 
-              - label: "CTA Section"
+              - label: "Button Section (CTA)"
                 name: "cta"
                 widget: "object"
                 fields:
-                  - { label: "Heading", name: "heading", widget: "string" }
-                  - { label: "Button Text", name: "buttonText", widget: "string" }
-                  - { label: "Button Link", name: "buttonLink", widget: "string", hint: "Example: /events or https://..." }
+                  - label: "Section Heading"
+                    name: "heading"
+                    widget: "string"
+                  - label: "Button Text"
+                    name: "buttonText"
+                    widget: "string"
+                    hint: "Example: Buy Tickets"
+                  - label: "Button Link"
+                    name: "buttonLink"
+                    widget: "string"
+                    hint: "Example: /events or https://…"
+                    pattern:
+                      - "^(\\/|https?:\\/\\/).+"
+                      - "Link must start with / or http(s)://"
 
       - name: "about"
         label: "About Page"
         file: "public/content/about.json"
         format: "json"
         fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Body", name: "body", widget: "markdown", hint: "Main about text. You can use headings and links." }
+          - label: "Page Title"
+            name: "title"
+            widget: "string"
+
+          - label: "About Text"
+            name: "body"
+            widget: "markdown"
+            hint: "You can use headings, links, and bullet points."
 
       - name: "events"
-        label: "Events (Add + Edit)"
+        label: "Events"
         file: "public/content/events.json"
         format: "json"
         fields:
-          - label: "Upcoming / Past Events List"
+          - label: "Events List (Upcoming + Past)"
             name: "events"
             widget: "list"
-            summary: "{{fields.title}} — {{fields.date}} — {{fields.venue}}"
-            hint: "Add new events here. Old events stay here too (you can add gallery photos later)."
+            collapsed: true
+            summary: "{{fields.title}} — {{fields.venue}} — {{fields.date}}"
+            hint: "Add new events here. After an event, come back and add Gallery Photos."
             fields:
-              - { label: "Title", name: "title", widget: "string", hint: "Example: Catacombs 7" }
-              - { label: "Date", name: "date", widget: "datetime" }
-              - { label: "Venue", name: "venue", widget: "string" }
-              - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
-              - { label: "Poster", name: "poster", widget: "image", required: false, hint: "Main event poster image." }
+              - label: "Event Name"
+                name: "title"
+                widget: "string"
+                hint: "Example: Catacombs 7"
+
+              - label: "Event Date & Time"
+                name: "date"
+                widget: "datetime"
+                date_format: "DD MMM YYYY"
+                time_format: "HH:mm"
+                picker_utc: false
+                hint: "Choose the event date and start time."
+
+              - label: "Venue"
+                name: "venue"
+                widget: "string"
+                hint: "Example: The Soundhouse"
+
+              - label: "Ticket Link (optional)"
+                name: "ticketUrl"
+                widget: "string"
+                required: false
+                hint: "Paste a full link (https://…)."
+                pattern:
+                  - "^(https?:\\/\\/).+"
+                  - "Ticket link must start with http(s)://"
+
+              - label: "Poster (optional)"
+                name: "poster"
+                widget: "image"
+                required: false
+                hint: "Main event poster image."
 
               - label: "Age Restriction"
                 name: "age"
@@ -74,59 +133,119 @@ collections:
                 default: "18+"
                 required: true
 
-              - { label: "Hidden (don’t show on site)", name: "hidden", widget: "boolean", default: false, required: false }
+              - label: "Hide from website"
+                name: "hidden"
+                widget: "boolean"
+                default: false
+                required: false
+                hint: "Turn ON if you don’t want this event visible on the site yet."
 
-              - label: "Gallery Photos"
+              - label: "Gallery Photos (add after the event)"
                 name: "gallery"
                 widget: "list"
                 required: false
+                collapsed: true
                 summary: "{{fields.caption}}"
-                hint: "Add photos after the event. These appear in the gallery on the website."
+                hint: "Add photos for this event. Keep captions short."
                 fields:
-                  - { label: "Image", name: "image", widget: "image" }
-                  - { label: "Caption (optional)", name: "caption", widget: "string", required: false }
+                  - label: "Image"
+                    name: "image"
+                    widget: "image"
+                  - label: "Caption (optional)"
+                    name: "caption"
+                    widget: "string"
+                    required: false
 
-          - label: "Event Page Blocks (add/reorder)"
+          - label: "Event Page Blocks (add / reorder)"
             name: "sections"
             widget: "list"
+            collapsed: true
             summary: "{{fields.heading}}"
+            hint: "These blocks show on the Events page."
             types:
               - label: "Lineup"
                 name: "lineup"
                 widget: "object"
                 fields:
-                  - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
+                  - label: "Block Heading"
+                    name: "heading"
+                    widget: "string"
+                    default: "Lineup"
                   - label: "Artists"
                     name: "artists"
                     widget: "list"
-                    field: { label: "Artist", name: "artist", widget: "string" }
+                    collapsed: true
+                    field:
+                      label: "Artist"
+                      name: "artist"
+                      widget: "string"
 
               - label: "Info Block"
                 name: "info"
                 widget: "object"
                 fields:
-                  - { label: "Heading", name: "heading", widget: "string" }
-                  - { label: "Text", name: "text", widget: "markdown" }
+                  - label: "Block Heading"
+                    name: "heading"
+                    widget: "string"
+                  - label: "Text"
+                    name: "text"
+                    widget: "markdown"
 
               - label: "Embed"
                 name: "embed"
                 widget: "object"
                 fields:
-                  - { label: "Heading (optional)", name: "heading", widget: "string", required: false }
-                  - { label: "Embed URL", name: "url", widget: "string", hint: "Spotify/SoundCloud/YouTube embed URL." }
+                  - label: "Heading (optional)"
+                    name: "heading"
+                    widget: "string"
+                    required: false
+                  - label: "Embed URL"
+                    name: "url"
+                    widget: "string"
+                    hint: "Paste a full link (Spotify/SoundCloud/YouTube)."
+                    pattern:
+                      - "^(https?:\\/\\/).+"
+                      - "Embed URL must start with http(s)://"
 
       - name: "merch"
         label: "Merch Store"
         file: "public/content/merch.json"
         format: "json"
         fields:
-          - label: "Items"
+          - label: "Merch Items"
             name: "items"
             widget: "list"
+            collapsed: true
             summary: "{{fields.name}} — {{fields.price}}"
+            hint: "Add items for the merch store."
             fields:
-              - { label: "Name", name: "name", widget: "string" }
-              - { label: "Price", name: "price", widget: "string", hint: "Example: €25" }
-              - { label: "Image", name: "image", widget: "image", required: false }
-              - { label: "Buy Link", name: "buyUrl", widget: "string", required: false }
-              - { label: "Description", name: "description", widget: "markdown", required: false }
+              - label: "Item Name"
+                name: "name"
+                widget: "string"
+
+              - label: "Price"
+                name: "price"
+                widget: "string"
+                hint: "Example: €25"
+                pattern:
+                  - "^€?\\d+(\\.\\d{1,2})?$"
+                  - "Use a number like 25, €25, or €25.00"
+
+              - label: "Image (optional)"
+                name: "image"
+                widget: "image"
+                required: false
+
+              - label: "Buy Link (optional)"
+                name: "buyUrl"
+                widget: "string"
+                required: false
+                hint: "Paste a full link (https://…)."
+                pattern:
+                  - "^(https?:\\/\\/).+"
+                  - "Buy link must start with http(s)://"
+
+              - label: "Description (optional)"
+                name: "description"
+                widget: "markdown"
+                required: false
