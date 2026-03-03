@@ -1,31 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Catacombs Admin</title>
 
-    <!-- Optional: your custom skin -->
-    <link rel="stylesheet" href="/admin/cms-safe.css" />
-
-    <!-- Netlify Identity (needed for git-gateway login) -->
-    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
-    <!-- Decap CMS (pin a stable version + use jsdelivr, less blocked than unpkg) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/decap-cms@3.4.0/dist/decap-cms.js"></script>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   </head>
-
-  <body>
-    <!-- Decap CMS mounts into this -->
-    <div id="nc-root"></div>
-
-    <script>
-      // Optional: style the preview pane too
-      window.addEventListener("load", () => {
-        if (window.CMS) {
-          CMS.registerPreviewStyle("/admin/cms-safe.css");
-        }
-      });
-    </script>
-  </body>
+  <body></body>
 </html>
