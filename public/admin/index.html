@@ -1,28 +1,31 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="robots" content="noindex" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catacombs Admin</title>
-  </head>
-  <body>
-    <!-- Netlify Identity Widget (THIS is what processes invite/recovery tokens) -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
+    <!-- Optional: your custom skin -->
+    <link rel="stylesheet" href="/admin/cms-safe.css" />
+
+    <!-- Netlify Identity (needed for git-gateway login) -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Decap CMS (pin a stable version + use jsdelivr, less blocked than unpkg) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/decap-cms@3.4.0/dist/decap-cms.js"></script>
+  </head>
+
+  <body>
+    <!-- Decap CMS mounts into this -->
+    <div id="nc-root"></div>
 
     <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", (user) => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
+      // Optional: style the preview pane too
+      window.addEventListener("load", () => {
+        if (window.CMS) {
+          CMS.registerPreviewStyle("/admin/cms-safe.css");
+        }
+      });
     </script>
   </body>
 </html>
