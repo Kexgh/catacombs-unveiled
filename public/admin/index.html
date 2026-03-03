@@ -5,16 +5,24 @@
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Catacombs Admin</title>
-
-    <!-- Netlify Identity -->
+  </head>
+  <body>
+    <!-- Netlify Identity Widget (THIS is what processes invite/recovery tokens) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Decap CMS (stable CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.4.0/dist/decap-cms.js"></script>
-  </head>
+    <!-- Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@latest/dist/decap-cms.js"></script>
 
-  <body>
-    <!-- REQUIRED mount element -->
-    <div id="nc-root"></div>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
