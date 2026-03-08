@@ -2,14 +2,15 @@ backend:
   name: git-gateway
   branch: main
 
-# where uploaded images go in your repo
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
 collections:
+
   - name: "site"
     label: "Site Content"
     files:
+
       - name: "home"
         label: "Home"
         file: "public/content/home.json"
@@ -22,6 +23,7 @@ collections:
             name: "sections"
             widget: "list"
             types:
+
               - label: "Text Section"
                 name: "text"
                 widget: "object"
@@ -50,16 +52,28 @@ collections:
         file: "public/content/events.json"
         format: "json"
         fields:
+
           - label: "Upcoming Events"
             name: "events"
             widget: "list"
             fields:
+
               - { label: "Title", name: "title", widget: "string" }
               - { label: "Date", name: "date", widget: "datetime" }
               - { label: "Venue", name: "venue", widget: "string" }
               - { label: "Ticket Link", name: "ticketUrl", widget: "string", required: false }
               - { label: "Poster", name: "poster", widget: "image", required: false }
 
+              # Gallery inside event
+              - label: "Gallery Photos"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "Image", name: "image", widget: "image" }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
+
+              # Age restriction
               - label: "Age Restriction"
                 name: "age"
                 widget: "select"
@@ -67,41 +81,45 @@ collections:
                 default: "18+"
                 required: true
 
+              # Hidden toggle
               - { label: "Hidden", name: "hidden", widget: "boolean", default: false, required: false }
 
-          - label: "Sections (add/reorder blocks)"
-            name: "sections"
-            widget: "list"
-            types:
-              - label: "Lineup"
-                name: "lineup"
-                widget: "object"
-                fields:
-                  - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
-                  - label: "Artists"
-                    name: "artists"
-                    widget: "list"
-                    field: { label: "Artist", name: "artist", widget: "string" }
+              # Sections inside event
+              - label: "Sections (add/reorder blocks)"
+                name: "sections"
+                widget: "list"
+                types:
 
-              - label: "Info Block"
-                name: "info"
-                widget: "object"
-                fields:
-                  - { label: "Heading", name: "heading", widget: "string" }
-                  - { label: "Text", name: "text", widget: "markdown" }
+                  - label: "Lineup"
+                    name: "lineup"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string", default: "Lineup" }
+                      - label: "Artists"
+                        name: "artists"
+                        widget: "list"
+                        field: { label: "Artist", name: "artist", widget: "string" }
 
-              - label: "Embed"
-                name: "embed"
-                widget: "object"
-                fields:
-                  - { label: "Heading", name: "heading", widget: "string", required: false }
-                  - { label: "Embed URL", name: "url", widget: "string" }
+                  - label: "Info Block"
+                    name: "info"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string" }
+                      - { label: "Text", name: "text", widget: "markdown" }
+
+                  - label: "Embed"
+                    name: "embed"
+                    widget: "object"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string", required: false }
+                      - { label: "Embed URL", name: "url", widget: "string" }
 
       - name: "merch"
         label: "Merch"
         file: "public/content/merch.json"
         format: "json"
         fields:
+
           - label: "Items"
             name: "items"
             widget: "list"
