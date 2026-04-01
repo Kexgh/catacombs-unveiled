@@ -55,7 +55,7 @@ const About = () => {
               <>
                 <p className="text-lg leading-relaxed">
                   Catacombs is Ireland's first event focusing on underground rap, hyperpop, and witch house.
-                  Born in April 2024, we've created a space where Ireland's finest underground artists take the stage.
+                  Born in April 2025, we've created a space where Ireland's finest underground artists take the stage.
                 </p>
                 <p className="text-lg leading-relaxed">
                   From explosive shows at The Sound House to all-ages events that welcome the next generation,
